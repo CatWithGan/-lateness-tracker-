@@ -8,12 +8,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
@@ -22,13 +23,14 @@ jobs:
         sudo apt update
         sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev
         pip install --upgrade pip
-        pip install "cython<3" buildozer
+        # Устанавливаем Cython и Buildozer напрямую с GitHub ветки master, где исправлен баг с pip
+        pip install "cython<3" git+https://github.com/kivy/buildozer.git
 
-    - name: Build APK
+    - name: Build APK with Buildozer
       run: |
-        yes | buildozer -v android debug
+        buildozer -v android debug
 
-    - name: Upload APK
+    - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: LatenessTracker_APK
