@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04 # Используем стабильную Ubuntu
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout code
@@ -27,26 +27,23 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        # Установка системных инструментов, включая 'aapt'
-        sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev aapt
+        # Добавили default-jdk, чтобы компилятор javac был доступен глобально
+        sudo apt install -y git zip unzip openjdk-17-jdk default-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev aapt
         
-        # Обновление pip и установка Cython, setuptools
         pip install --upgrade pip
         pip install "setuptools<70" "cython<3" 
-        
-        # Установка Buildozer и python-for-android напрямую с GitHub
         pip install git+https://github.com/kivy/buildozer.git
         pip install git+https://github.com/kivy/python-for-android.git
 
     - name: Build APK with Buildozer
       run: |
-        # *** АГРЕССИВНАЯ ОЧИСТКА КЭША BUILDER'а ***
-        # Удаляем всю папку с кешем Buildozer, чтобы заставить его скачать SDK/NDK заново
+        # Гарантируем, что JAVA_HOME указывает куда нужно перед запуском сборки
+        export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+        export PATH=$PATH:$JAVA_HOME/bin
+
+        # Полная очистка и сборка
         rm -rf "$HOME/.buildozer"
-        # Очищаем старые артефакты сборки, чтобы избежать конфликтов
         buildozer android clean
-        
-        # Запускаем финальную сборку APK
         buildozer -v android debug
 
     - name: Upload APK Artifact
