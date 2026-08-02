@@ -29,13 +29,14 @@ jobs:
         sudo apt update
         sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev
         pip install --upgrade pip
-        # Фиксируем версии для стабильности
         pip install "setuptools<70" "cython<3" 
+        # Устанавливаем последние версии инструментов напрямую с GitHub
         pip install git+https://github.com/kivy/buildozer.git
+        pip install git+https://github.com/kivy/python-for-android.git
 
     - name: Build APK with Buildozer
       run: |
-        # Полная очистка перед стартом
+        # Полная очистка
         rm -rf "$HOME/.buildozer"
         buildozer android clean
         
