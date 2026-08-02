@@ -7,36 +7,34 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04 # Используем стабильную Ubuntu
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
     - name: Install dependencies
       run: |
-        # Обновляем систему и устанавливаем все нужные пакеты
         sudo apt update
-        sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev
-        
-        # Устанавливаем Cython и Buildozer напрямую с GitHub master-ветки (где все баги исправлены)
-        pip install --upgrade pip setuptools
+        sudo apt install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev
+        pip install --upgrade pip
+        # Устанавливаем исправленную версию Buildozer напрямую с GitHub разработчиков Kivy
         pip install "cython<3" git+https://github.com/kivy/buildozer.git
 
-    - name: Configure and Build APK
+    - name: Build APK with Buildozer
       run: |
-        # Явно устанавливаем NDK и SDK
-        export ANDROIDSDK="$HOME/.buildozer/android/platform/android-sdk"
-        export ANDROIDNDK="$HOME/.buildozer/android/platform/android-ndk-r25b" # Используем r25b
-        
-        # Добавляем пути к компиляторам в PATH
-        export PATH="$PATH:$ANDROIDNDK/toolchains/llvm/prebuilt/linux-x86_64/bin"
-        export PATH="$PATH:$ANDROIDNDK/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin"
-        
-        # Очищаем старые сборки, чтобы избежать конфликтов
-        buildozer android clean
-        
-        # Запускаем финальную сборку APK
+        # Запуск чистой сборки на автомате. Buildozer сам скачает правильные версии SDK/NDK
         buildozer -v android debug
 
     - name: Upload APK Artifact
