@@ -1,44 +1,25 @@
-name: Build Android APK
-
-on:
-  push:
-    branches: [ main, master ]
-  workflow_dispatch:
-
+name: Build APK
+on: [push, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-22.04
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev
-        pip install --upgrade pip
-        # Устанавливаем исправленную версию Buildozer напрямую с GitHub разработчиков Kivy
-        pip install "cython<3" git+https://github.com/kivy/buildozer.git
-
-    - name: Build APK with Buildozer
-      run: |
-        # Запуск чистой сборки на автомате. Buildozer сам скачает правильные версии SDK/NDK
-        buildozer -v android debug
-
-    - name: Upload APK Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: LatenessTracker_APK
-        path: bin/*.apk
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev
+          pip install --upgrade "pip<24.1" "setuptools<70" "cython<3"
+          pip install git+https://github.com/kivy/buildozer.git
+      - name: Build APK
+        run: |
+          # Это одна команда, которая делает ВСЁ
+          buildozer -v android debug
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-app
+          path: bin/*.apk
