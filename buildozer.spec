@@ -7,7 +7,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,json
 version = 0.1
 
-# Мы убрали libffi и openssl, чтобы избежать ошибки 404
+# Оставляем только самое необходимое
 requirements = python3,kivy==2.3.0
 
 # (Раздел 2: Экран)
@@ -22,7 +22,12 @@ android.ndk = 25b
 android.archs = arm64-v8a
 android.accept_sdk_license = True
 android.enable_androidx = True
+
+# Явное указание точки входа и движка
 android.bootstrap = sdl2
+android.entrypoint = main.py
+
+# Используем ветку master для python-for-android
 p4a.branch = master
 
 [buildozer]
