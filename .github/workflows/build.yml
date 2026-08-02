@@ -1,25 +1,51 @@
-name: Build APK
-on: [push, workflow_dispatch]
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-22.04 # Используем стабильную Ubuntu
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev
-          pip install --upgrade "pip<24.1" "setuptools<70" "cython<3"
-          pip install git+https://github.com/kivy/buildozer.git
-      - name: Build APK
-        run: |
-          # Это одна команда, которая делает ВСЁ
-          buildozer -v android debug
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: my-app
-          path: bin/*.apk
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev
+        
+        # Устанавливаем Cython и Buildozer напрямую с GitHub master-ветки (где все баги исправлены)
+        pip install --upgrade pip setuptools
+        pip install "cython<3" git+https://github.com/kivy/buildozer.git
+
+    - name: Configure and Build APK
+      run: |
+        # *** АГРЕССИВНАЯ ОЧИСТКА КЭША BUILDER'а ***
+        # Удаляем всю папку с кешем Buildozer, чтобы заставить его скачать SDK/NDK заново
+        rm -rf "$HOME/.buildozer"
+        # Удаляем старые артефакты сборки
+        buildozer android clean
+        
+        # Запускаем финальную сборку APK
+        buildozer -v android debug
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: LatenessTracker_APK
+        path: bin/*.apk
