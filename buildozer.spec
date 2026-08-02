@@ -6,21 +6,23 @@ package.domain = org.experiment
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,json
 version = 0.1
-requirements = python3,kivy==2.3.0
 
-# (Раздел 2: Экран)
+# Добавлены hostpython3, libffi и openssl для исправления ошибки линковщика
+requirements = python3,kivy==2.3.0,hostpython3,libffi,openssl
+
+# (Раздел 2: Настройки экрана)
 orientation = portrait
 fullscreen = 0
 
-# (Раздел 3: Настройки Android - КРИТИЧЕСКИ ВАЖНО)
+# (Раздел 3: Настройки Android — пуленепробиваемый конфиг)
 android.api = 33
 android.minapi = 21
 android.sdk = 33
-android.ndk = 25b # Фиксируем стабильную версию NDK
+android.ndk = 25b
 android.archs = arm64-v8a
 android.accept_sdk_license = True
-android.bootstrap = sdl2 # Явно указываем загрузчик
-p4a.branch = master # Используем самую свежую версию python-for-android
+android.bootstrap = sdl2
+p4a.branch = master
 
 [buildozer]
 log_level = 2
