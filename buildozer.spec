@@ -16,15 +16,11 @@ fullscreen = 0
 android.api = 33
 android.minapi = 21
 android.sdk = 33
-android.ndk = 25b
+android.ndk = 25.2.9519653
 android.archs = arm64-v8a
 android.accept_sdk_license = True
-
-# Эта строка исправляет ошибку AttributeError: 'NoneType'
 android.bootstrap = sdl2
-
-# Эта строка помогает избежать проблем с библиотеками
-p4a.branch = master
+p4a.branch = master # Используем самую свежую версию python-for-android
 
 [buildozer]
 log_level = 2
