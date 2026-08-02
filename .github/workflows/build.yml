@@ -10,8 +10,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -28,6 +27,9 @@ jobs:
 
     - name: Build APK with Buildozer
       run: |
+        # Очищаем кэш дистрибутива, чтобы избежать конфликтов NDK/SDK
+        buildozer android clean
+        # Запускаем финальную сборку
         buildozer -v android debug
 
     - name: Upload APK Artifact
