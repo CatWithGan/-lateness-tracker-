@@ -12,11 +12,15 @@ requirements = python3,kivy==2.3.0
 orientation = portrait
 fullscreen = 0
 
-# (Раздел 3: Настройки Android — отдаем управление Buildozer)
+# (Раздел 3: Настройки Android - КРИТИЧЕСКИ ВАЖНО)
 android.api = 33
 android.minapi = 21
+android.sdk = 33
+android.ndk = 25b # Фиксируем стабильную версию NDK
 android.archs = arm64-v8a
 android.accept_sdk_license = True
+android.bootstrap = sdl2 # Явно указываем загрузчик
+p4a.branch = master # Используем самую свежую версию python-for-android
 
 [buildozer]
 log_level = 2
